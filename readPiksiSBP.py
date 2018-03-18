@@ -37,7 +37,7 @@ class PiksiSBP:
 			#READ DATA AND PARSE
 			#POSITION
 			if msg_id == 522:
-				print "Found 522"
+				#print "Found 522"
 				try:	#Read entire message payload
 					data = self.ser.read(ord(header[4]))
 				except:
@@ -51,7 +51,7 @@ class PiksiSBP:
 					self.latlon_valid = ret[2]
 			#VELOCITY
 			if msg_id == 526:
-				print "Found 526"
+				#print "Found 526"
 				try:	#Read entire message payload
 					data = self.ser.read(ord(header[4]))
 				except:

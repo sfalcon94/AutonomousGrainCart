@@ -12,7 +12,7 @@ import socket
 import math
 import dronekit_sitl
 
-from .readPiksiSBP import PiksiSBP
+from readPiksiSBP import PiksiSBP
 
 #######MODIFY ACCORDINGLY######
 telemetry_port = "/dev/ttyUSB0"

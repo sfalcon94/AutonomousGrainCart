@@ -11,6 +11,14 @@ import gps
 import socket
 import math
 import dronekit_sitl
+
+from .readPiksiSBP import PiksiSBP
+
+#######MODIFY ACCORDINGLY######
+telemetry_port = "/dev/ttyUSB0"
+gps_port = "/dev/ttyUSB1"
+###############################
+
 sitl = dronekit_sitl.start_default()
 connection_string = sitl.connection_string()
 
@@ -18,7 +26,7 @@ top_label_font_size = 10
 label_font_size = 12
 
 #Use this line for connecting with 3dr radio
-v = connect("/dev/telemetry", baud=57600 , wait_ready=False)
+v = connect(telemetry_port, baud=57600 , wait_ready=False)
 #use this line for connecting to simulation
 #v = connect(connection_string, wait_ready=False)
 print "Connected to Tractor \nReady to Go!!!"
@@ -384,6 +392,27 @@ def getGpsLoc():
     # Use the python gps package to access the laptop GPS
     global nextGpsLoc
     try:
+        piksi = PiksiSBP(gps_port)  #gps.gps(mode=gps.WATCH_ENABLE)
+        gotgps=True
+        while gotgps:
+            piksi.next()
+            if (piksi.latlon_valid & piksi.speed_valid) != 0:
+                # print "got new gps position"
+                nextGpsLoc = [piksi.latitude, piksi.longitude, piksi.track, piksi.speed]
+                # return nextGpsLoc
+    except socket.error:
+        print "Error the GPS does not seem to be connected \n"
+
+gpsThread = threading.Thread(target=getGpsLoc)
+gpsThread.start()   
+
+'''
+#Original function.
+def getGpsLoc():
+    #returns list of lat,lon,track,speed
+    # Use the python gps package to access the laptop GPS
+    global nextGpsLoc
+    try:
         gpsd = gps.gps(mode=gps.WATCH_ENABLE)
         gotgps=True
         while gotgps:
@@ -397,7 +426,7 @@ def getGpsLoc():
 
 gpsThread = threading.Thread(target=getGpsLoc)
 gpsThread.start()   
-
+'''
 
 def cartUnldLoc(distLeft,distAhead,combineLoc):
     #returns lat lon that is dist left and dist ahead of combine location.
